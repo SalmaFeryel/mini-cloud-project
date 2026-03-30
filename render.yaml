@@ -26,6 +26,8 @@ services:
         value: ""  # Empty - will use fallback in app code
       - key: REDIS_PORT
         value: "6379"
+      - key: PORT
+        value: "5000" 
 
 databases:
   - name: postgres-db
