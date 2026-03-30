@@ -23,10 +23,7 @@ services:
           name: postgres-db
           property: database
       - key: REDIS_HOST
-        fromService:
-          name: redis-cache
-          type: redis
-          property: host
+        value: ""  # Empty - will use fallback in app code
       - key: REDIS_PORT
         value: "6379"
 
@@ -35,6 +32,3 @@ databases:
     plan: free
     databaseName: tasks
     user: admin
-
-  - name: redis-cache
-    plan: free
