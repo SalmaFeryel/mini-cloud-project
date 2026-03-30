@@ -4,7 +4,7 @@ services:
     runtime: image
     plan: free
     image:
-      url: docker.io/YOUR_DOCKER_USERNAME/flask-todo:latest
+      url: docker.io/salmaferiel/flask-todo:latest
     envVars:
       - key: POSTGRES_HOST
         fromDatabase:
