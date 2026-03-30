@@ -1,0 +1,44 @@
+services:
+  # Flask Application
+  - type: web
+    name: flask-todo-app
+    runtime: image
+    repo: https://github.com/SalmaFeryel/mini-cloud-project
+    plan: free
+    image:
+      url: docker.io/salmaferiel/flask-todo:latest
+    envVars:
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: postgres-db
+          property: host
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: postgres-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: postgres-db
+          property: password
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: postgres-db
+          property: database
+      - key: REDIS_HOST
+        fromService:
+          name: redis-cache
+          type: redis
+          property: host
+      - key: REDIS_PORT
+        value: "6379"
+
+# Managed PostgreSQL
+databases:
+  - name: postgres-db
+    plan: free
+    databaseName: tasks
+    user: admin
+
+# Managed Redis
+  - name: redis-cache
+    plan: free
