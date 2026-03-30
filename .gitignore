@@ -1,1 +1,6 @@
 .env
+__pycache__/
+*.pyc
+db-data/
+prometheus-data/
+grafana-data/

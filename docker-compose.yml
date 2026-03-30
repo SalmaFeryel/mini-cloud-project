@@ -1,5 +1,5 @@
-services:
 
+services:
   nginx:
     image: nginx:latest
     ports:
@@ -8,6 +8,8 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app
+    networks:
+      - app-net
 
   app:
     build: ./app
@@ -16,6 +18,8 @@ services:
     depends_on:
       - db
       - redis
+    networks:
+      - app-net
 
   db:
     image: postgres:14
@@ -23,25 +27,63 @@ services:
       - .env
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - app-net
 
   redis:
-    image: redis:latest
+    image: redis:7-alpine
+    networks:
+      - app-net
 
+  # ---------- MONITORING ----------
   prometheus:
     image: prom/prometheus
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
     ports:
       - "9090:9090"
+    networks:
+      - app-net
     depends_on:
       - app
+      - cadvisor   
 
   grafana:
     image: grafana/grafana
     ports:
       - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - app-net
     depends_on:
       - prometheus
 
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    networks:
+      - app-net
+    privileged: true   #  for better metrics
+    depends_on:
+      - app
+
+networks:
+  app-net:
+    driver: bridge
+
 volumes:
   db-data:
+  prometheus-data:
+  grafana-data:
